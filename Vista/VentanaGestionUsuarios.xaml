@@ -1,0 +1,100 @@
+﻿<Window x:Class="AplicacionMVP.Vista.VentanaGestionUsuarios"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Gestión de Empleados" Height="720" Width="1050"
+        WindowStartupLocation="CenterScreen"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        Background="#F4F6F9"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+    <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="340"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0">
+            <materialDesign:Card Padding="15" UniformCornerRadius="8" materialDesign:ElevationAssist.Elevation="Dp2">
+                <StackPanel>
+                    <TextBlock Text="Registro de Trabajadores" FontSize="18" FontWeight="Bold" Margin="0,0,0,15" Foreground="#2C3E50"/>
+
+                    <TextBox x:Name="txtRut" materialDesign:HintAssist.Hint="RUT" 
+                             Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+
+                    <TextBox x:Name="txtNombre" materialDesign:HintAssist.Hint="Nombre" 
+                             Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+
+                    <TextBox x:Name="txtApPaterno" materialDesign:HintAssist.Hint="Apellido Paterno" 
+                             Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+
+                    <TextBox x:Name="txtApMaterno" materialDesign:HintAssist.Hint="Apellido Materno" 
+                             Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+
+                    <TextBox x:Name="txtCorreo" materialDesign:HintAssist.Hint="Correo Electrónico" 
+                             Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+
+                    <PasswordBox x:Name="txtContrasena" materialDesign:HintAssist.Hint="Contraseña" 
+                                 Style="{DynamicResource MaterialDesignFloatingHintPasswordBox}" Margin="0,0,0,10"/>
+
+                    <ComboBox x:Name="cmbRol" materialDesign:HintAssist.Hint="Rol del Funcionario" 
+                              Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,10">
+                        <ComboBoxItem Content="Administrador" Tag="1"/>
+                        <ComboBoxItem Content="Empleado" Tag="2"/>
+                    </ComboBox>
+
+                    <ComboBox x:Name="cmbEstado" materialDesign:HintAssist.Hint="Estado Laboral" 
+                              Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,15">
+                        <ComboBoxItem Content="Vigente"/>
+                        <ComboBoxItem Content="Desvinculado"/>
+                    </ComboBox>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,5">
+                        <Button Content="Limpiar" Click="BtnLimpiar_Click" Width="95" Margin="5" 
+                                Style="{DynamicResource MaterialDesignOutlinedButton}"/>
+                        <Button Content="Crear" Click="BtnCrear_Click" Width="95" Margin="5" 
+                                Style="{DynamicResource MaterialDesignRaisedButton}" Background="#27AE60" BorderBrush="#27AE60"/>
+                    </StackPanel>
+
+                    <Button Content="Ir a Ver Reportes" Click="BtnVerReportes_Click" Height="35" Margin="0,10,0,0" 
+                            Style="{DynamicResource MaterialDesignRaisedButton}" Background="#9B59B6" BorderBrush="#9B59B6"/>
+
+                    <Button Content="Cerrar Sesión" Click="BtnCerrarSesion_Click" Height="35" Margin="0,10,0,0" 
+                            Style="{DynamicResource MaterialDesignOutlinedButton}" Foreground="#E74C3C" BorderBrush="#E74C3C"/>
+                </StackPanel>
+            </materialDesign:Card>
+        </ScrollViewer>
+
+        <Grid Grid.Column="1" Margin="10,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Nómina de Funcionarios" FontSize="18" FontWeight="Bold" Margin="0,0,0,15" Foreground="#2C3E50"/>
+
+            <DataGrid Grid.Row="1" x:Name="dgUsuarios" AutoGenerateColumns="False" IsReadOnly="True" 
+                      SelectionChanged="DgUsuarios_SelectionChanged">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding id_usuario}"/>
+                    <DataGridTextColumn Header="RUT" Binding="{Binding rut}"/>
+                    <DataGridTextColumn Header="Nombre" Binding="{Binding nombre}"/>
+                    <DataGridTextColumn Header="Ap. Paterno" Binding="{Binding apellido_paterno}"/>
+                    <DataGridTextColumn Header="Ap. Materno" Binding="{Binding apellido_materno}"/>
+                    <DataGridTextColumn Header="Correo" Binding="{Binding correo}" Width="*"/>
+                    <DataGridTextColumn Header="Rol" Binding="{Binding id_rol}"/>
+                    <DataGridTextColumn Header="Estado" Binding="{Binding estado_laboral}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                <Button Content="Modificar" Click="BtnModificar_Click" Width="110" Height="35" Margin="5" 
+                        Style="{DynamicResource MaterialDesignRaisedButton}" Background="#F39C12" BorderBrush="#F39C12"/>
+                <Button Content="Desvincular" Click="BtnEliminar_Click" Width="110" Height="35" Margin="5" 
+                        Style="{DynamicResource MaterialDesignRaisedButton}" Background="#E74C3C" BorderBrush="#E74C3C"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

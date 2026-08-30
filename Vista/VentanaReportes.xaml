@@ -1,0 +1,163 @@
+﻿<Window x:Class="AplicacionMVP.Vista.VentanaReportes"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Panel de Control y Reportes Administrativos" Height="720" Width="820"
+        WindowStartupLocation="CenterScreen"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        Background="#F4F6F9"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+    <Grid Margin="15">
+        <materialDesign:Card Padding="15" UniformCornerRadius="10" materialDesign:ElevationAssist.Elevation="Dp3">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Panel de Reportes Administrativos" FontSize="20" FontWeight="Bold" 
+                           Foreground="#2C3E50" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+
+                <!-- TARJETAS DE RESUMEN COMPACTAS Y UNIFORMES -->
+                <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,8" MaxHeight="52">
+                    <materialDesign:Card Background="#F8F9FA" Padding="4" Margin="3" UniformCornerRadius="5" BorderBrush="#E5E7E9" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="Trabajadores Presentes" FontSize="10" Foreground="#5D6D7E" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="txtStatAsistentes" Text="0" FontSize="14" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </materialDesign:Card>
+                    <materialDesign:Card Background="#F8F9FA" Padding="4" Margin="3" UniformCornerRadius="5" BorderBrush="#E5E7E9" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="Atrasos" FontSize="10" Foreground="#5D6D7E" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="txtStatAtrasos" Text="0" FontSize="14" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </materialDesign:Card>
+                    <materialDesign:Card Background="#FDF2E9" Padding="4" Margin="3" UniformCornerRadius="5" BorderBrush="#F5B041" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="Inasistentes" FontSize="10" Foreground="#B9770E" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="txtStatInasistentes" Text="0" FontSize="14" FontWeight="Bold" Foreground="#9A630A" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </materialDesign:Card>
+                    <materialDesign:Card Background="#F8F9FA" Padding="4" Margin="3" UniformCornerRadius="5" BorderBrush="#E5E7E9" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="Salidas Anticipadas" FontSize="10" Foreground="#5D6D7E" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="txtStatAnticipadas" Text="0" FontSize="14" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </materialDesign:Card>
+                </UniformGrid>
+
+                <!-- SECCIÓN: REPORTE DIARIO (BOTÓN VERDE CON LOGO DE EXCEL) -->
+                <materialDesign:Card Grid.Row="2" Background="#F2F4F4" Padding="8" UniformCornerRadius="8" Margin="0,0,0,8">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="Reporte Diario:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#1B4F72"/>
+                        <DatePicker x:Name="dpReporteDiario" SelectedDateChanged="DpReporteDiario_SelectedDateChanged" Width="150" VerticalAlignment="Center" Margin="0,0,15,0"/>
+
+                        <Button Click="BtnReporteDiarioExcel_Click" Width="220" Height="32"
+                                Style="{DynamicResource MaterialDesignRaisedButton}" Background="#27AE60" BorderBrush="#27AE60" Foreground="White"
+                                materialDesign:ButtonAssist.CornerRadius="5">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FileExcel" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="Exportar Diario a Excel" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- LÍNEA SEPARADORA PARA REPORTES MENSUALES -->
+                <TextBlock Grid.Row="3" Text="────────────  REPORTES MENSUALES  ────────────" FontSize="12" FontWeight="Bold" 
+                           Foreground="#95A5A6" HorizontalAlignment="Center" Margin="0,4,0,8"/>
+
+                <!-- BLOQUE: Filtros de Fecha Mensual + Botones de Reportes Mensuales -->
+                <StackPanel Grid.Row="4" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,0,8">
+
+                    <!-- Filtros de Mes y Año -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <ComboBox x:Name="cmbMes" materialDesign:HintAssist.Hint="Seleccionar Mes" 
+                                  Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Width="150" Margin="0,0,15,0">
+                            <ComboBoxItem Content="Enero" Tag="01"/>
+                            <ComboBoxItem Content="Febrero" Tag="02"/>
+                            <ComboBoxItem Content="Marzo" Tag="03"/>
+                            <ComboBoxItem Content="Abril" Tag="04"/>
+                            <ComboBoxItem Content="Mayo" Tag="05"/>
+                            <ComboBoxItem Content="Junio" Tag="06"/>
+                            <ComboBoxItem Content="Julio" Tag="07"/>
+                            <ComboBoxItem Content="Agosto" Tag="08"/>
+                            <ComboBoxItem Content="Septiembre" Tag="09"/>
+                            <ComboBoxItem Content="Octubre" Tag="10"/>
+                            <ComboBoxItem Content="Noviembre" Tag="11"/>
+                            <ComboBoxItem Content="Diciembre" Tag="12"/>
+                        </ComboBox>
+
+                        <ComboBox x:Name="cmbAnio" materialDesign:HintAssist.Hint="Seleccionar Año" 
+                                  Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Width="100" Margin="0,0,15,0">
+                            <ComboBoxItem Content="2026"/>
+                            <ComboBoxItem Content="2025"/>
+                            <ComboBoxItem Content="2024"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Botones de Selección de Reportes Mensuales -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Reporte de Atrasos" Click="BtnAtrasos_Click" Width="140" Height="34" 
+                                Style="{DynamicResource MaterialDesignRaisedButton}" Background="#F39C12" BorderBrush="#F39C12" Margin="3,0"/>
+
+                        <Button Content="Salidas Anticipadas" Click="BtnSalidas_Click" Width="140" Height="34" 
+                                Style="{DynamicResource MaterialDesignRaisedButton}" Background="#E67E22" BorderBrush="#E67E22" Margin="3,0"/>
+
+                        <Button Content="Inasistencias" Click="BtnInasistencias_Click" Width="140" Height="34" 
+                                Style="{DynamicResource MaterialDesignRaisedButton}" Background="#E74C3C" BorderBrush="#E74C3C" Margin="3,0"/>
+
+                        <Button Content="Informe General" Click="BtnInformeGeneralVistaPrevia_Click" Width="140" Height="34" 
+                                Style="{DynamicResource MaterialDesignRaisedButton}" Background="#1B4F72" BorderBrush="#1B4F72" Margin="3,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- DATAGRID -->
+                <DataGrid Grid.Row="5" x:Name="dgReportes" AutoGenerateColumns="False" IsReadOnly="True" 
+                          MinHeight="120" MaxHeight="180" AlternatingRowBackground="#E8F8F5" HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" />
+                        <DataGridTextColumn Header="Apellido" Binding="{Binding Apellido}" />
+                        <DataGridTextColumn Header="RUT" Binding="{Binding Rut}" />
+                        <DataGridTextColumn Header="Cargo" Binding="{Binding Cargo}" Width="*" />
+                        <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}" />
+                        <DataGridTextColumn x:Name="colDetalle" Header="Detalle" Binding="{Binding HoraEntrada}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- BOTONES INFERIORES -->
+                <Grid Grid.Row="6" Margin="0,8,0,0">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Button Content="Volver a Gestión de Empleados" Click="BtnVolverGestion_Click" 
+                                Width="230" Height="32" Margin="0,0,0,6"
+                                Style="{DynamicResource MaterialDesignOutlinedButton}" 
+                                Foreground="#2980B9" BorderBrush="#2980B9"/>
+
+                        <Button x:Name="btnVolver" Content="Cerrar Sesión" Click="BtnVolver_Click" 
+                                Width="230" Height="32"
+                                Style="{DynamicResource MaterialDesignOutlinedButton}" 
+                                Foreground="#E74C3C" BorderBrush="#E74C3C"/>
+                    </StackPanel>
+
+                    <Button Click="BtnExportarActivo_Click" 
+                            Width="260" Height="36" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Style="{DynamicResource MaterialDesignRaisedButton}" 
+                            Background="#27AE60" BorderBrush="#27AE60" Foreground="White" 
+                            materialDesign:ButtonAssist.CornerRadius="5">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FileExcel" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Exportar Reporte a Excel" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+        </materialDesign:Card>
+    </Grid>
+</Window>

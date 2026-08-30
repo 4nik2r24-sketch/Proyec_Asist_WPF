@@ -1,0 +1,41 @@
+﻿<Window x:Class="AplicacionMVP.Vista.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Inicio de Sesión" Height="450" Width="400" WindowStartupLocation="CenterScreen"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"      
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+
+    <Grid Background="#F0F2F5">
+        <materialDesign:Card Width="320" UniformCornerRadius="15" 
+                     VerticalAlignment="Center" HorizontalAlignment="Center" 
+                     materialDesign:ElevationAssist.Elevation="Dp4">
+            <StackPanel VerticalAlignment="Center" Margin="25">
+                
+                <materialDesign:PackIcon Kind="AccountCircle" Width="60" Height="60" 
+                                         HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+
+                <TextBlock Text="Control de Asistencia" FontSize="20" FontWeight="Bold" 
+                           HorizontalAlignment="Center" Margin="0,10,0,25" Foreground="#2C3E50"/>
+
+                <TextBox x:Name="txtCorreo" materialDesign:HintAssist.Hint="Correo Electrónico" 
+                         Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,20"/>
+
+                <PasswordBox x:Name="txtContrasena" materialDesign:HintAssist.Hint="Contraseña" 
+                             Style="{DynamicResource MaterialDesignFloatingHintPasswordBox}" Margin="0,0,0,20"/>
+
+                <TextBlock x:Name="lblError" Text="Credenciales incorrectas" Foreground="#E74C3C" 
+                           HorizontalAlignment="Center" Visibility="Collapsed" Margin="0,0,0,10"/>
+
+                <Button Content="Iniciar Sesión" Click="BtnLogin_Click" 
+                        Style="{DynamicResource MaterialDesignRaisedButton}" 
+                        materialDesign:ButtonAssist.CornerRadius="8" Height="45" Margin="0,10,0,0"/>
+            </StackPanel>
+        </materialDesign:Card>
+    </Grid>
+</Window>
