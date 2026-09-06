@@ -14,8 +14,8 @@
             <StackPanel>
                 <TextBlock Text="Actualizar Datos del Trabajador" FontSize="18" FontWeight="Bold" Margin="0,0,0,15" Foreground="#2C3E50" HorizontalAlignment="Center"/>
 
-                <TextBox x:Name="txtRut" materialDesign:HintAssist.Hint="RUT" TextChanged="Campo_TextChanged"
-                         Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+                <TextBox x:Name="txtRut" materialDesign:HintAssist.Hint="RUT" TextChanged="TxtRut_TextChanged"
+         Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
 
                 <TextBox x:Name="txtNombre" materialDesign:HintAssist.Hint="Nombre" TextChanged="Campo_TextChanged"
                          Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
@@ -38,10 +38,10 @@
                     <ComboBoxItem Content="Empleado" Tag="2"/>
                 </ComboBox>
 
-                <ComboBox x:Name="cmbEstado" materialDesign:HintAssist.Hint="Estado Laboral" SelectionChanged="Combo_SelectionChanged"
-                          Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,20">
-                    <ComboBoxItem Content="Vigente"/>
-                    <ComboBoxItem Content="Desvinculado"/>
+                <ComboBox x:Name="cmbEstado" materialDesign:HintAssist.Hint="Estado" SelectionChanged="Combo_SelectionChanged"
+          Style="{DynamicResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,20">
+                    <ComboBoxItem Content="Vigente" Tag="Vigente"/>
+                    <ComboBoxItem Content="Eliminado" Tag="Eliminado"/>
                 </ComboBox>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">

@@ -35,7 +35,7 @@ namespace AplicacionMVP.Vista
             cmbRol.SelectedIndex = (row["id_rol"].ToString() == "1") ? 0 : 1;
             origRol = cmbRol.SelectedIndex.ToString();
 
-            cmbEstado.SelectedIndex = (row["estado_laboral"].ToString() == "Vigente") ? 0 : 1;
+            cmbEstado.SelectedIndex = (row["estado"].ToString() == "Vigente") ? 0 : 1;
             origEstado = cmbEstado.SelectedIndex.ToString();
 
             datosCargados = true;
@@ -47,6 +47,8 @@ namespace AplicacionMVP.Vista
             if (!datosCargados) return;
             if (sender is TextBox txt)
             {
+                if (txt.Name == "txtRut") return;
+
                 string original = txt.Name switch
                 {
                     "txtRut" => origRut,
@@ -65,6 +67,40 @@ namespace AplicacionMVP.Vista
                 {
                     txt.ClearValue(TextBox.BackgroundProperty);
                 }
+            }
+        }
+
+        private void TxtRut_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!datosCargados) return;
+
+            string text = txtRut.Text.Replace("-", "").Trim();
+
+            if (text.Length > 9)
+            {
+                text = text.Substring(0, 9);
+            }
+
+            if (text.Length > 1)
+            {
+                string cuerpo = text.Substring(0, text.Length - 1);
+                string dv = text.Substring(text.Length - 1, 1);
+                string rutFormateado = $"{cuerpo}-{dv}";
+
+                if (txtRut.Text != rutFormateado)
+                {
+                    txtRut.Text = rutFormateado;
+                    txtRut.CaretIndex = txtRut.Text.Length;
+                }
+            }
+
+            if (txtRut.Text != origRut)
+            {
+                txtRut.Background = new SolidColorBrush(Color.FromRgb(220, 252, 231));
+            }
+            else
+            {
+                txtRut.ClearValue(TextBox.BackgroundProperty);
             }
         }
 
@@ -112,7 +148,7 @@ namespace AplicacionMVP.Vista
             if (txtCorreo.Text != origCorreo) detalleCambios += $"\n- Correo: '{origCorreo}' ➔ '{txtCorreo.Text}'";
             if (txtContrasena.Password != origContra) detalleCambios += $"\n- Contraseña modificada";
             if (cmbRol.SelectedIndex.ToString() != origRol) detalleCambios += $"\n- Rol modificado";
-            if (cmbEstado.SelectedIndex.ToString() != origEstado) detalleCambios += $"\n- Estado Laboral modificado";
+            if (cmbEstado.SelectedIndex.ToString() != origEstado) detalleCambios += $"\n- Estado modificado";
 
             if (string.IsNullOrEmpty(detalleCambios))
             {
@@ -130,7 +166,7 @@ namespace AplicacionMVP.Vista
             if (confirmacion == MessageBoxResult.Yes)
             {
                 int rolId = cmbRol.SelectedIndex == 0 ? 1 : 2;
-                string estado = cmbEstado.SelectedIndex == 0 ? "Vigente" : "Desvinculado";
+                string estado = cmbEstado.SelectedIndex == 0 ? "Vigente" : "Eliminado";
 
                 using (MySqlConnection con = conexionBD.ObtenerConexion())
                 {
@@ -138,7 +174,7 @@ namespace AplicacionMVP.Vista
                     {
                         con.Open();
                         string query = "UPDATE usuario SET id_rol=@rol, rut=@rut, nombre=@nombre, apellido_paterno=@paterno, " +
-                                       "apellido_materno=@materno, correo=@correo, contrasena=@contra, estado_laboral=@estado " +
+                                       "apellido_materno=@materno, correo=@correo, contrasena=@contra, estado=@estado " +
                                        "WHERE id_usuario=@id";
 
                         using (MySqlCommand cmd = new MySqlCommand(query, con))
