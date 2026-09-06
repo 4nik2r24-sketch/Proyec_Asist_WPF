@@ -32,7 +32,7 @@ namespace AplicacionMVP.Vista
                 try
                 {
                     con.Open();
-                    string query = "SELECT id_usuario, id_rol, rut, nombre, apellido_paterno, estado_laboral FROM usuario WHERE correo = @correo AND contrasena = @contrasena";
+                    string query = "SELECT id_usuario, id_rol, rut, nombre, apellido_paterno, estado FROM usuario WHERE correo = @correo AND contrasena = @contrasena";
                     using (MySqlCommand cmd = new MySqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@correo", correo);
@@ -42,7 +42,7 @@ namespace AplicacionMVP.Vista
                         {
                             if (reader.Read())
                             {
-                                string estado = reader.GetString("estado_laboral");
+                                string estado = reader.GetString("estado");
                                 if (estado == "Desvinculado")
                                 {
                                     lblError.Text = "Su usuario se encuentra desvinculado.";
