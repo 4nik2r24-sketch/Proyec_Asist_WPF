@@ -10,7 +10,7 @@
         public string ApellidoMaterno { get; set; } = "";
         public string Correo { get; set; } = "";
         public string Contrasena { get; set; } = "";
-        public string EstadoLaboral { get; set; } = "";
+        public string Estado { get; set; } = "";
         public string Cargo { get; set; } = "";
     }
 } 
