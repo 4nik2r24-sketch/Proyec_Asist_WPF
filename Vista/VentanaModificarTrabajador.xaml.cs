@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,7 +15,6 @@ namespace AplicacionMVP.Vista
         private int idTrabajador;
         public bool ModificacionExitosos { get; private set; } = false;
 
-       
         private string origRut = "", origNombre = "", origPaterno = "", origMaterno = "", origCorreo = "", origContra = "", origRol = "", origEstado = "";
         private bool datosCargados = false;
 
@@ -41,7 +40,6 @@ namespace AplicacionMVP.Vista
             datosCargados = true;
         }
 
-        //se resalta visualmente en verde si el campo fue modificado
         private void Campo_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!datosCargados) return;
@@ -51,7 +49,6 @@ namespace AplicacionMVP.Vista
 
                 string original = txt.Name switch
                 {
-                    "txtRut" => origRut,
                     "txtNombre" => origNombre,
                     "txtApPaterno" => origPaterno,
                     "txtApMaterno" => origMaterno,
@@ -61,7 +58,7 @@ namespace AplicacionMVP.Vista
 
                 if (txt.Text != original)
                 {
-                    txt.Background = new SolidColorBrush(Color.FromRgb(220, 252, 231)); // Verde claro
+                    txt.Background = new SolidColorBrush(Color.FromRgb(220, 252, 231));
                 }
                 else
                 {
@@ -139,7 +136,6 @@ namespace AplicacionMVP.Vista
             string nombre = txtNombre.Text;
             string apellido = txtApPaterno.Text;
 
-            
             string detalleCambios = "";
             if (txtRut.Text != origRut) detalleCambios += $"\n- RUT: '{origRut}' ➔ '{txtRut.Text}'";
             if (txtNombre.Text != origNombre) detalleCambios += $"\n- Nombre: '{origNombre}' ➔ '{txtNombre.Text}'";
