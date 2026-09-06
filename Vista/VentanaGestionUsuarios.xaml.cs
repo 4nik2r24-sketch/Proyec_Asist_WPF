@@ -34,25 +34,59 @@ namespace AplicacionMVP.Vista
                 {
                     con.Open();
 
-                    // 1. Cargar Usuarios Vigentes (Tabla Superior)
+                    // Cargar Usuarios Vigentes con lógica mensual y contador anual
                     string queryVigentes = @"
-                        SELECT id_usuario, id_rol, rut, nombre, apellido_paterno, 
-                               apellido_materno, correo, contrasena, estado_laboral
-                        FROM usuario WHERE estado_laboral = 'Vigente'";
+                SELECT u.id_usuario, u.id_rol, u.rut, u.nombre, u.apellido_paterno, 
+                       u.apellido_materno, u.correo, u.contrasena, u.estado_laboral,
+                       -- Atrasos solo del mes actual
+                       (SELECT COUNT(*) FROM asistencia a WHERE a.id_usuario = u.id_usuario AND a.hora_entrada > '09:30:00' AND a.estado_asistencia = 'Presente' AND MONTH(a.fecha) = MONTH(CURDATE()) AND YEAR(a.fecha) = YEAR(CURDATE())) AS atrasos,
+                       -- Fecha de amonestación solo si fue enviada este mes
+                       (SELECT MAX(fecha_generacion) FROM amonestacion am WHERE am.id_usuario = u.id_usuario AND MONTH(am.fecha_generacion) = MONTH(CURDATE()) AND YEAR(am.fecha_generacion) = YEAR(CURDATE())) AS fecha_amonestacion,
+                       -- Cantidad total de amonestaciones en el año para la nueva columna visual
+                       (SELECT COUNT(*) FROM amonestacion am2 WHERE am2.id_usuario = u.id_usuario AND YEAR(am2.fecha_generacion) = YEAR(CURDATE())) AS total_amonestaciones
+                FROM usuario u WHERE u.estado_laboral = 'Vigente'";
 
                     using (MySqlCommand cmdVigentes = new MySqlCommand(queryVigentes, con))
                     using (MySqlDataAdapter adapterVigentes = new MySqlDataAdapter(cmdVigentes))
                     {
                         DataTable dtVigentes = new DataTable();
                         adapterVigentes.Fill(dtVigentes);
+
+                        dtVigentes.Columns.Add("EstadoUI", typeof(string));
+                        dtVigentes.Columns.Add("TextoBotonGris", typeof(string));
+
+                        foreach (DataRow row in dtVigentes.Rows)
+                        {
+                            int atrasos = Convert.ToInt32(row["atrasos"]);
+                            bool yaAmonestadoEsteMes = row["fecha_amonestacion"] != DBNull.Value;
+
+                            if (yaAmonestadoEsteMes)
+                            {
+                                DateTime fecha = Convert.ToDateTime(row["fecha_amonestacion"]);
+                                row["EstadoUI"] = "Enviada";
+                                row["TextoBotonGris"] = $"✓ Enviada ({fecha:dd-MM-yyyy})";
+                            }
+                            else if (atrasos >= 4) // Solo se enciende si este mes tiene 4 o más atrasos
+                            {
+                                row["EstadoUI"] = "Amonestar";
+                                row["TextoBotonGris"] = "";
+                            }
+                            else
+                            {
+                                row["EstadoUI"] = "Ninguno";
+                                row["TextoBotonGris"] = "";
+                            }
+                        }
+
                         dgUsuariosVigentes.ItemsSource = dtVigentes.DefaultView;
                     }
 
-                    // 2. Cargar Usuarios Desvinculados (Tabla Inferior)
+                    //Cargar Usuarios Eliminados
                     string queryDesvinculados = @"
-                        SELECT id_usuario, id_rol, rut, nombre, apellido_paterno, 
-                               apellido_materno, correo, contrasena, estado_laboral
-                        FROM usuario WHERE estado_laboral = 'Desvinculado'";
+    SELECT u.id_usuario, u.id_rol, u.rut, u.nombre, u.apellido_paterno, 
+           u.apellido_materno, u.correo, u.contrasena, u.estado_laboral,
+           (SELECT COUNT(*) FROM amonestacion am WHERE am.id_usuario = u.id_usuario) AS total_amonestaciones
+    FROM usuario u WHERE u.estado_laboral = 'Desvinculado'";
 
                     using (MySqlCommand cmdDesvinculados = new MySqlCommand(queryDesvinculados, con))
                     using (MySqlDataAdapter adapterDesvinculados = new MySqlDataAdapter(cmdDesvinculados))
@@ -62,9 +96,9 @@ namespace AplicacionMVP.Vista
                         dgUsuariosDesvinculados.ItemsSource = dtDesvinculados.DefaultView;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Notificacion aviso = new Notificacion("Error al cargar trabajadores: " + ex.Message);
+                    Notificacion aviso = new Notificacion("No se puede eliminar definitivamente porque el usuario tiene registros de asistencia o amonestaciones asociadas.");
                     aviso.ShowDialog();
                 }
             }
@@ -72,7 +106,6 @@ namespace AplicacionMVP.Vista
 
         private void TxtRut_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // Formateo automático del RUT con guion antes del dígito verificador
             string text = txtRut.Text.Replace("-", "").Trim();
             if (text.Length > 1)
             {
@@ -102,7 +135,7 @@ namespace AplicacionMVP.Vista
             }
 
             int rolId = cmbRol.SelectedIndex == 0 ? 1 : 2;
-            string estado = "Vigente"; // Todo nuevo trabajador nace siendo Vigente por lógica de negocio
+            string estado = "Vigente";
 
             using (MySqlConnection con = conexionBD.ObtenerConexion())
             {
@@ -176,7 +209,6 @@ namespace AplicacionMVP.Vista
             }
         }
 
-        // Botón Desvincular (Tabla Superior - Borrado lógico cambiando estado a Desvinculado)
         private void BtnDesvincular_Click(object sender, RoutedEventArgs e)
         {
             if (usuarioSeleccionadoId == 0 || esTablaDesvinculadosSeleccionada)
@@ -191,8 +223,8 @@ namespace AplicacionMVP.Vista
             string rutAEliminar = txtRut.Text;
 
             MessageBoxResult resultado = MessageBox.Show(
-                $"¿Está seguro de que desea dar de baja (desvincular) al trabajador {nombreAEliminar} {apellidoAEliminar} (RUT: {rutAEliminar})?",
-                "Confirmar Desvinculación",
+                $"¿Está seguro de que desea eliminar al trabajador {nombreAEliminar} {apellidoAEliminar} (RUT: {rutAEliminar})?",
+                "Confirme la acción",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -209,7 +241,7 @@ namespace AplicacionMVP.Vista
                             cmd.Parameters.AddWithValue("@id", usuarioSeleccionadoId);
                             cmd.ExecuteNonQuery();
 
-                            Notificacion aviso = new Notificacion($"El trabajador {nombreAEliminar} {apellidoAEliminar} ha sido marcado como Desvinculado.");
+                            Notificacion aviso = new Notificacion($"El trabajador {nombreAEliminar} {apellidoAEliminar} ha sido eliminado.");
                             aviso.ShowDialog();
 
                             BtnLimpiar_Click(null, null);
@@ -225,90 +257,9 @@ namespace AplicacionMVP.Vista
             }
         }
 
-        // Re-vincular al trabajador desde la tabla inferior
-        private void BtnRevincular_Click(object sender, RoutedEventArgs e)
-        {
-            if (usuarioSeleccionadoId == 0 || !esTablaDesvinculadosSeleccionada)
-            {
-                Notificacion aviso = new Notificacion("Debe seleccionar un trabajador de la lista de desvinculados para re-vincularlo.");
-                aviso.ShowDialog();
-                return;
-            }
+        
 
-            using (MySqlConnection con = conexionBD.ObtenerConexion())
-            {
-                try
-                {
-                    con.Open();
-                    string query = "UPDATE usuario SET estado_laboral = 'Vigente' WHERE id_usuario = @id";
-                    using (MySqlCommand cmd = new MySqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@id", usuarioSeleccionadoId);
-                        cmd.ExecuteNonQuery();
-
-                        Notificacion aviso = new Notificacion("El trabajador ha sido re-vinculado exitosamente a la nómina activa.");
-                        aviso.ShowDialog();
-
-                        BtnLimpiar_Click(null, null);
-                        CargarUsuarios();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Notificacion err = new Notificacion("Error al re-vincular: " + ex.Message);
-                    err.ShowDialog();
-                }
-            }
-        }
-
-        // Eliminar de forma definitiva de la base de datos (Cumple con GU-03)
-        private void BtnEliminarDefinitivo_Click(object sender, RoutedEventArgs e)
-        {
-            if (usuarioSeleccionadoId == 0 || !esTablaDesvinculadosSeleccionada)
-            {
-                Notificacion aviso = new Notificacion("Debe seleccionar un trabajador de la lista de desvinculados para eliminarlo permanentemente.");
-                aviso.ShowDialog();
-                return;
-            }
-
-            string nombreAEliminar = txtNombre.Text;
-            string apellidoAEliminar = txtApPaterno.Text;
-            string rutAEliminar = txtRut.Text;
-
-            MessageBoxResult resultado = MessageBox.Show(
-                $"¿Está seguro de eliminar PERMANENTEMENTE al trabajador {nombreAEliminar} {apellidoAEliminar} (RUT: {rutAEliminar}) de la base de datos?\n\nEsta acción no se puede deshacer.",
-                "Confirmar Eliminación Definitiva",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (resultado == MessageBoxResult.Yes)
-            {
-                using (MySqlConnection con = conexionBD.ObtenerConexion())
-                {
-                    try
-                    {
-                        con.Open();
-                        string query = "DELETE FROM usuario WHERE id_usuario = @id";
-                        using (MySqlCommand cmd = new MySqlCommand(query, con))
-                        {
-                            cmd.Parameters.AddWithValue("@id", usuarioSeleccionadoId);
-                            cmd.ExecuteNonQuery();
-
-                            Notificacion aviso = new Notificacion($"El trabajador {nombreAEliminar} {apellidoAEliminar} fue eliminado permanentemente.");
-                            aviso.ShowDialog();
-
-                            BtnLimpiar_Click(null, null);
-                            CargarUsuarios();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Notificacion aviso = new Notificacion("No se puede eliminar de forma definitiva porque el usuario tiene registros de asistencia asociados. \nError: " + ex.Message);
-                        aviso.ShowDialog();
-                    }
-                }
-            }
-        }
+        
 
         private void BtnLimpiar_Click(object? sender, RoutedEventArgs? e)
         {
@@ -375,6 +326,24 @@ namespace AplicacionMVP.Vista
             PanelPrincipalVentana panel = new PanelPrincipalVentana(usuarioLogueado);
             panel.Show();
             this.Close();
+        }
+
+        // ---FUNCIÓN PARA AMONESTAR ---
+        private void BtnAmonestar_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button boton && boton.DataContext is DataRowView fila)
+            {
+                int idUsuario = Convert.ToInt32(fila["id_usuario"]);
+                string nombreCompleto = $"{fila["nombre"]} {fila["apellido_paterno"]}";
+                string rut = fila["rut"].ToString();
+                string correo = fila["correo"].ToString();
+                int atrasos = Convert.ToInt32(fila["atrasos"]);
+
+                VentanaGenerarAmonestacion ventanaCarta = new VentanaGenerarAmonestacion(idUsuario, nombreCompleto, rut, correo, atrasos);
+                ventanaCarta.ShowDialog();
+
+                CargarUsuarios(); // Recarga la tabla para que el botón se ponga gris
+            }
         }
     }
 }

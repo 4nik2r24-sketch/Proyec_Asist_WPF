@@ -4,6 +4,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Panel Principal - Sistema de Asistencia" Height="650" Width="800"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -56,18 +57,16 @@
             </materialDesign:Card>
         </Grid>
 
-        <!-- AQUI ESTÁ EL PANEL FLOTANTE DE SEGURIDAD QUE FALTABA (OVERLAY) -->
-        <Grid x:Name="OverlaySeguridad" Background="#CC000000" Visibility="Collapsed">
+                <Grid x:Name="OverlaySeguridad" Background="#CC000000" Visibility="Collapsed">
             <materialDesign:Card Width="340" Height="240" VerticalAlignment="Center" HorizontalAlignment="Center" UniformCornerRadius="10" Padding="20">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="Seguridad Administrativa" FontWeight="Bold" FontSize="18" Foreground="#2C3E50" HorizontalAlignment="Center" Margin="0,0,0,8"/>
                     <TextBlock Text="Ingrese la clave maestra para continuar:" FontSize="13" Foreground="#7F8C8D" HorizontalAlignment="Center" Margin="0,0,0,12"/>
 
-                    <!-- Aquí está la caja de texto que faltaba -->
-                    <PasswordBox x:Name="txtClaveAdmin" materialDesign:HintAssist.Hint="Contraseña de Control" 
+                            <PasswordBox x:Name="txtClaveAdmin" materialDesign:HintAssist.Hint="Contraseña de Control" 
                                  Style="{DynamicResource MaterialDesignFloatingHintPasswordBox}" Margin="0,0,0,8"/>
 
-                    <!-- Aquí está el mensaje de error que faltaba -->
+        
                     <TextBlock x:Name="lblErrorClave" Text="Contraseña incorrecta." Foreground="#E74C3C" Visibility="Collapsed" HorizontalAlignment="Center" FontSize="12" Margin="0,0,0,8"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">

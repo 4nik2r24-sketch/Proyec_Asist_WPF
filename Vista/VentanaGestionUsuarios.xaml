@@ -4,6 +4,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Gestión de Empleados" Height="720" Width="1100"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -15,7 +16,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- PANEL IZQUIERDO: REGISTRO DE TRABAJADORES (Sin estado laboral innecesario) -->
+        <!-- PANEL IZQUIERDO REGISTRO DE TRABAJADORES  -->
         <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0">
             <materialDesign:Card Padding="15" UniformCornerRadius="8" materialDesign:ElevationAssist.Elevation="Dp2">
                 <StackPanel>
@@ -62,7 +63,7 @@
             </materialDesign:Card>
         </ScrollViewer>
 
-        <!-- PANEL DERECHO: DOBLE TABLA (VIGENTES Y DESVINCULADOS) -->
+        <!-- PANEL DERECHO: DOBLE TABLA (VIGENTES Y ELIMINADOS) -->
         <Grid Grid.Column="1" Margin="10,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -91,21 +92,74 @@
                         <DataGridTextColumn Header="Correo" Binding="{Binding correo}" Width="*"/>
                         <DataGridTextColumn Header="Rol" Binding="{Binding id_rol}"/>
                         <DataGridTextColumn Header="Estado" Binding="{Binding estado_laboral}"/>
+
+                        <DataGridTextColumn Header="Cant. Amonestaciones Acumuladas" Binding="{Binding total_amonestaciones}" Width="160"/>
+                        <DataGridTemplateColumn Header="Estado Amonestación" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <!-- Botón Naranja (Amonestar) -->
+                                        <Button Content="⚠️ Amonestar" Click="BtnAmonestar_Click"
+                                                Background="#E67E22" BorderBrush="#E67E22" Height="28" Padding="10,0" FontSize="11">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding EstadoUI}" Value="Amonestar">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                        <!-- Botón Gris (Ya amonestado) -->
+                                        <Button Content="{Binding TextoBotonGris}" IsEnabled="False"
+                                                Background="#95A5A6" BorderBrush="#95A5A6" Foreground="White" Height="28" Padding="10,0" FontSize="11">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding EstadoUI}" Value="Enviada">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                        <!-- Texto '-' (Sin atrasos suficientes) -->
+                                        <TextBlock Text="-" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding EstadoUI}" Value="Ninguno">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
                     <Button Content="Modificar" Click="BtnModificar_Click" Width="110" Height="32" Margin="5" 
                             Style="{DynamicResource MaterialDesignRaisedButton}" Background="#F39C12" BorderBrush="#F39C12"/>
-                    <Button Content="Desvincular" Click="BtnDesvincular_Click" Width="110" Height="32" Margin="5" 
+                    <Button Content="Eliminar" Click="BtnDesvincular_Click" Width="110" Height="32" Margin="5" 
                             Style="{DynamicResource MaterialDesignRaisedButton}" Background="#E74C3C" BorderBrush="#E74C3C"/>
                 </StackPanel>
             </Grid>
 
-            <!-- SEPARADOR VISUAL -->
+ 
             <Separator Grid.Row="1" Margin="0,10"/>
 
-            <!-- 2. TABLA INFERIOR: FUNCIONARIOS DESVINCULADOS -->
+            <!-- 2. TABLA INFERIOR: FUNCIONARIOS ELIMINADOS -->
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -113,7 +167,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="Funcionarios Desvinculados" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" Foreground="#C0392B"/>
+                <TextBlock Grid.Row="0" Text="Funcionarios Eliminados" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" Foreground="#C0392B"/>
 
                 <DataGrid Grid.Row="1" x:Name="dgUsuariosDesvinculados" AutoGenerateColumns="False" IsReadOnly="True" 
                           SelectionChanged="DgUsuariosDesvinculados_SelectionChanged">
@@ -126,15 +180,12 @@
                         <DataGridTextColumn Header="Correo" Binding="{Binding correo}" Width="*"/>
                         <DataGridTextColumn Header="Rol" Binding="{Binding id_rol}"/>
                         <DataGridTextColumn Header="Estado" Binding="{Binding estado_laboral}"/>
+                        <DataGridTextColumn Header="Cant. Amonestaciones" Binding="{Binding total_amonestaciones}" Width="160"/>
+                        
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-                    <Button Content="Re-vincular" Click="BtnRevincular_Click" Width="110" Height="32" Margin="5" 
-                            Style="{DynamicResource MaterialDesignRaisedButton}" Background="#27AE60" BorderBrush="#27AE60"/>
-                    <Button Content="Eliminar Definitivo" Click="BtnEliminarDefinitivo_Click" Width="135" Height="32" Margin="5" 
-                            Style="{DynamicResource MaterialDesignRaisedButton}" Background="#C0392B" BorderBrush="#C0392B"/>
-                </StackPanel>
+                
             </Grid>
         </Grid>
     </Grid>

@@ -4,6 +4,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Panel de Control y Reportes Administrativos" Height="720" Width="820"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -25,8 +26,7 @@
                 <TextBlock Grid.Row="0" Text="Panel de Reportes Administrativos" FontSize="20" FontWeight="Bold" 
                            Foreground="#2C3E50" HorizontalAlignment="Center" Margin="0,0,0,8"/>
 
-                <!-- TARJETAS DE RESUMEN COMPACTAS Y UNIFORMES -->
-                <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,8" MaxHeight="52">
+                               <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,8" MaxHeight="52">
                     <materialDesign:Card Background="#F8F9FA" Padding="4" Margin="3" UniformCornerRadius="5" BorderBrush="#E5E7E9" BorderThickness="1">
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                             <TextBlock Text="Trabajadores Presentes" FontSize="10" Foreground="#5D6D7E" HorizontalAlignment="Center"/>
@@ -53,8 +53,7 @@
                     </materialDesign:Card>
                 </UniformGrid>
 
-                <!-- SECCIÓN: REPORTE DIARIO (BOTÓN VERDE CON LOGO DE EXCEL) -->
-                <materialDesign:Card Grid.Row="2" Background="#F2F4F4" Padding="8" UniformCornerRadius="8" Margin="0,0,0,8">
+                               <materialDesign:Card Grid.Row="2" Background="#F2F4F4" Padding="8" UniformCornerRadius="8" Margin="0,0,0,8">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Reporte Diario:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#1B4F72"/>
                         <DatePicker x:Name="dpReporteDiario" SelectedDateChanged="DpReporteDiario_SelectedDateChanged" Width="150" VerticalAlignment="Center" Margin="0,0,15,0"/>
@@ -70,11 +69,11 @@
                     </StackPanel>
                 </materialDesign:Card>
 
-                <!-- LÍNEA SEPARADORA PARA REPORTES MENSUALES -->
+                
                 <TextBlock Grid.Row="3" Text="────────────  REPORTES MENSUALES  ────────────" FontSize="12" FontWeight="Bold" 
                            Foreground="#95A5A6" HorizontalAlignment="Center" Margin="0,4,0,8"/>
 
-                <!-- BLOQUE: Filtros de Fecha Mensual + Botones de Reportes Mensuales -->
+                
                 <StackPanel Grid.Row="4" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,0,8">
 
                     <!-- Filtros de Mes y Año -->
@@ -119,7 +118,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- DATAGRID -->
+
                 <DataGrid Grid.Row="5" x:Name="dgReportes" AutoGenerateColumns="False" IsReadOnly="True" 
                           MinHeight="120" MaxHeight="180" AlternatingRowBackground="#E8F8F5" HeadersVisibility="Column">
                     <DataGrid.Columns>

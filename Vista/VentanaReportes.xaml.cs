@@ -57,7 +57,7 @@ namespace AplicacionMVP.Vista
                 }
                 catch
                 {
-                    // Manejo silencioso en caso de inicialización sin conexión previa
+                    
                 }
             }
         }
