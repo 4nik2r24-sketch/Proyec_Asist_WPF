@@ -37,14 +37,14 @@ namespace AplicacionMVP.Vista
                     // Cargar Usuarios Vigentes con lógica mensual y contador anual
                     string queryVigentes = @"
                 SELECT u.id_usuario, u.id_rol, u.rut, u.nombre, u.apellido_paterno, 
-                       u.apellido_materno, u.correo, u.contrasena, u.estado_laboral,
+                       u.apellido_materno, u.correo, u.contrasena, u.estado,
                        -- Atrasos solo del mes actual
                        (SELECT COUNT(*) FROM asistencia a WHERE a.id_usuario = u.id_usuario AND a.hora_entrada > '09:30:00' AND a.estado_asistencia = 'Presente' AND MONTH(a.fecha) = MONTH(CURDATE()) AND YEAR(a.fecha) = YEAR(CURDATE())) AS atrasos,
                        -- Fecha de amonestación solo si fue enviada este mes
                        (SELECT MAX(fecha_generacion) FROM amonestacion am WHERE am.id_usuario = u.id_usuario AND MONTH(am.fecha_generacion) = MONTH(CURDATE()) AND YEAR(am.fecha_generacion) = YEAR(CURDATE())) AS fecha_amonestacion,
                        -- Cantidad total de amonestaciones en el año para la nueva columna visual
                        (SELECT COUNT(*) FROM amonestacion am2 WHERE am2.id_usuario = u.id_usuario AND YEAR(am2.fecha_generacion) = YEAR(CURDATE())) AS total_amonestaciones
-                FROM usuario u WHERE u.estado_laboral = 'Vigente'";
+                FROM usuario u WHERE u.estado = 'Vigente'";
 
                     using (MySqlCommand cmdVigentes = new MySqlCommand(queryVigentes, con))
                     using (MySqlDataAdapter adapterVigentes = new MySqlDataAdapter(cmdVigentes))
@@ -82,11 +82,7 @@ namespace AplicacionMVP.Vista
                     }
 
                     //Cargar Usuarios Eliminados
-                    string queryDesvinculados = @"
-    SELECT u.id_usuario, u.id_rol, u.rut, u.nombre, u.apellido_paterno, 
-           u.apellido_materno, u.correo, u.contrasena, u.estado_laboral,
-           (SELECT COUNT(*) FROM amonestacion am WHERE am.id_usuario = u.id_usuario) AS total_amonestaciones
-    FROM usuario u WHERE u.estado_laboral = 'Desvinculado'";
+                    string queryDesvinculados = @"SELECT u.id_usuario, u.id_rol, u.rut, u.nombre, u.apellido_paterno, u.apellido_materno, u.correo, u.contrasena, u.estado, (SELECT COUNT(*) FROM amonestacion am WHERE am.id_usuario = u.id_usuario) AS total_amonestaciones FROM usuario u WHERE u.estado = 'Eliminado'";
 
                     using (MySqlCommand cmdDesvinculados = new MySqlCommand(queryDesvinculados, con))
                     using (MySqlDataAdapter adapterDesvinculados = new MySqlDataAdapter(cmdDesvinculados))
@@ -106,7 +102,14 @@ namespace AplicacionMVP.Vista
 
         private void TxtRut_TextChanged(object sender, TextChangedEventArgs e)
         {
+           
             string text = txtRut.Text.Replace("-", "").Trim();
+
+            if (text.Length > 9)
+            {
+                text = text.Substring(0, 9);
+            }
+
             if (text.Length > 1)
             {
                 string cuerpo = text.Substring(0, text.Length - 1);
@@ -116,7 +119,7 @@ namespace AplicacionMVP.Vista
                 if (txtRut.Text != rutFormateado)
                 {
                     txtRut.Text = rutFormateado;
-                    txtRut.CaretIndex = txtRut.Text.Length;
+                    txtRut.CaretIndex = txtRut.Text.Length; 
                 }
             }
         }
@@ -159,8 +162,8 @@ namespace AplicacionMVP.Vista
                     }
 
                     string query = @"INSERT INTO usuario 
-                                   (id_rol, rut, nombre, apellido_paterno, apellido_materno, correo, contrasena, estado_laboral) 
-                                   VALUES (@rol, @rut, @nombre, @paterno, @materno, @correo, @contra, @estado)";
+(id_rol, rut, nombre, apellido_paterno, apellido_materno, correo, contrasena, estado) 
+VALUES (@rol, @rut, @nombre, @paterno, @materno, @correo, @contra, @estado)";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, con))
                     {
@@ -235,7 +238,7 @@ namespace AplicacionMVP.Vista
                     try
                     {
                         con.Open();
-                        string query = "UPDATE usuario SET estado_laboral = 'Desvinculado' WHERE id_usuario = @id";
+                        string query = "UPDATE usuario SET estado = 'Eliminado' WHERE id_usuario = @id";
                         using (MySqlCommand cmd = new MySqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@id", usuarioSeleccionadoId);
@@ -257,9 +260,9 @@ namespace AplicacionMVP.Vista
             }
         }
 
-        
 
-        
+
+
 
         private void BtnLimpiar_Click(object? sender, RoutedEventArgs? e)
         {
