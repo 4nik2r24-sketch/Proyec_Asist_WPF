@@ -23,8 +23,8 @@
                     <TextBlock Text="Registro de Trabajadores" FontSize="18" FontWeight="Bold" Margin="0,0,0,15" Foreground="#2C3E50"/>
 
                     <TextBox x:Name="txtRut" materialDesign:HintAssist.Hint="RUT" 
-                             Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10" 
-                             TextChanged="TxtRut_TextChanged"/>
+         Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10" 
+         TextChanged="TxtRut_TextChanged"/>
 
                     <TextBox x:Name="txtNombre" materialDesign:HintAssist.Hint="Nombre" 
                              Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
@@ -91,7 +91,7 @@
                         <DataGridTextColumn Header="Ap. Materno" Binding="{Binding apellido_materno}"/>
                         <DataGridTextColumn Header="Correo" Binding="{Binding correo}" Width="*"/>
                         <DataGridTextColumn Header="Rol" Binding="{Binding id_rol}"/>
-                        <DataGridTextColumn Header="Estado" Binding="{Binding estado_laboral}"/>
+                        <DataGridTextColumn Header="Estado" Binding="{Binding estado}"/>
 
                         <DataGridTextColumn Header="Cant. Amonestaciones Acumuladas" Binding="{Binding total_amonestaciones}" Width="160"/>
                         <DataGridTemplateColumn Header="Estado Amonestación" Width="150">
@@ -179,7 +179,7 @@
                         <DataGridTextColumn Header="Ap. Materno" Binding="{Binding apellido_materno}"/>
                         <DataGridTextColumn Header="Correo" Binding="{Binding correo}" Width="*"/>
                         <DataGridTextColumn Header="Rol" Binding="{Binding id_rol}"/>
-                        <DataGridTextColumn Header="Estado" Binding="{Binding estado_laboral}"/>
+                        <DataGridTextColumn Header="Estado" Binding="{Binding estado}"/>
                         <DataGridTextColumn Header="Cant. Amonestaciones" Binding="{Binding total_amonestaciones}" Width="160"/>
                         
                     </DataGrid.Columns>
