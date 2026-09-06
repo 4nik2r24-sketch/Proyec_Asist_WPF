@@ -37,7 +37,7 @@ namespace AplicacionMVP.Vista
                     using (MySqlConnection con = conexionBD.ObtenerConexion())
                     {
                         con.Open();
-                        string query = "SELECT id_usuario, rut, nombre, apellido_paterno, id_rol FROM usuario WHERE id_rol = 1 AND estado_laboral = 'Vigente' LIMIT 1";
+                        string query = "SELECT id_usuario, rut, nombre, apellido_paterno, id_rol FROM usuario WHERE id_rol = 1 AND estado = 'Vigente' LIMIT 1";
                         using (MySqlCommand cmd = new MySqlCommand(query, con))
                         using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -83,7 +83,7 @@ namespace AplicacionMVP.Vista
                         SELECT u.id_usuario, a.hora_entrada, a.hora_salida, a.estado_asistencia
                         FROM usuario u 
                         LEFT JOIN asistencia a ON u.id_usuario = a.id_usuario AND a.fecha = @fecha
-                        WHERE u.estado_laboral = 'Vigente'";
+                        WHERE u.estado = 'Vigente'";
 
                     DataTable dt = new DataTable();
                     using (MySqlCommand cmd = new MySqlCommand(query, con))
@@ -274,10 +274,9 @@ namespace AplicacionMVP.Vista
                 {
                     con.Open();
                     string queryUsuarios = @"
-                        SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo 
-                        FROM usuario u 
-                        INNER JOIN rol r ON u.id_rol = r.id_rol 
-                        WHERE u.estado_laboral = 'Vigente'";
+    SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo 
+    FROM usuario u 
+    INNER JOIN rol r ON u.id_rol = r.id_rol";
 
                     DataTable dtUsuarios = new DataTable();
                     using (MySqlDataAdapter adapterU = new MySqlDataAdapter(queryUsuarios, con)) { adapterU.Fill(dtUsuarios); }
@@ -338,11 +337,10 @@ namespace AplicacionMVP.Vista
             if (!ValidarSeleccionFecha(out _, out _)) return;
 
             string query = @"SELECT u.nombre AS Nombre, u.apellido_paterno AS Apellido, u.rut AS Rut, 
-                                    r.nombre_rol AS Cargo, 'Matriz Mensual' AS Fecha, 'Vista Previa Activa' AS HoraEntrada 
-                             FROM usuario u 
-                             INNER JOIN rol r ON u.id_rol = r.id_rol 
-                             WHERE u.estado_laboral = 'Vigente' 
-                             ORDER BY u.id_usuario ASC";
+                        r.nombre_rol AS Cargo, 'Matriz Mensual' AS Fecha, 'Vista Previa Activa' AS HoraEntrada 
+                 FROM usuario u 
+                 INNER JOIN rol r ON u.id_rol = r.id_rol 
+                 ORDER BY u.id_usuario ASC";
 
             try
             {
@@ -396,7 +394,7 @@ namespace AplicacionMVP.Vista
                         "Fecha Atraso", "Hora Entrada",
                         @"SELECT u.id_usuario, 
                                 (SELECT COUNT(*) FROM asistencia a WHERE a.id_usuario = u.id_usuario AND MONTH(a.fecha) = @mes AND YEAR(a.fecha) = @anio AND a.hora_entrada > '09:30:00') AS total_valor 
-                          FROM usuario u WHERE u.estado_laboral = 'Vigente'",
+                          FROM usuario u",
                         mesInt, anioInt, mesTexto, anioStr
                     );
                 }
@@ -411,7 +409,7 @@ namespace AplicacionMVP.Vista
                         "Fecha Salida", "Hora Salida",
                         @"SELECT u.id_usuario, 
                                 (SELECT COUNT(*) FROM asistencia a WHERE a.id_usuario = u.id_usuario AND MONTH(a.fecha) = @mes AND YEAR(a.fecha) = @anio AND a.hora_salida < '17:30:00') AS total_valor 
-                          FROM usuario u WHERE u.estado_laboral = 'Vigente'",
+                         FROM usuario u",
                         mesInt, anioInt, mesTexto, anioStr
                     );
                 }
@@ -437,7 +435,7 @@ namespace AplicacionMVP.Vista
                     FROM usuario u 
                     INNER JOIN rol r ON u.id_rol = r.id_rol 
                     LEFT JOIN asistencia a ON u.id_usuario = a.id_usuario AND a.fecha = @fecha
-                    WHERE u.estado_laboral = 'Vigente'
+                    WHERE u.estado = 'Vigente'
                     ORDER BY a.hora_entrada DESC, u.id_usuario ASC";
 
                 DataTable dtDatos = new DataTable();
@@ -637,6 +635,13 @@ namespace AplicacionMVP.Vista
                     ws.Range(fFirma + 1, 3, fFirma + 1, 8).Style.Font.FontColor = XLColor.DimGray;
 
                     ws.Columns().AdjustToContents();
+
+                    
+                    ws.Column(1).Width = 6;   
+                    ws.Column(2).Width = 36;  
+                    ws.Column(3).Width = 16;  
+                    ws.Column(4).Width = 18;  
+
                     workbook.SaveAs(rutaArchivo);
                 }
             }
@@ -648,7 +653,7 @@ namespace AplicacionMVP.Vista
             using (MySqlConnection con = conexionBD.ObtenerConexion())
             {
                 con.Open();
-                string queryUsuarios = "SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo FROM usuario u INNER JOIN rol r ON u.id_rol = r.id_rol WHERE u.estado_laboral = 'Vigente'";
+                string queryUsuarios = "SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo FROM usuario u INNER JOIN rol r ON u.id_rol = r.id_rol";
                 DataTable dtUsuarios = new DataTable();
                 using (MySqlDataAdapter adapterU = new MySqlDataAdapter(queryUsuarios, con)) { adapterU.Fill(dtUsuarios); }
 
@@ -917,7 +922,7 @@ namespace AplicacionMVP.Vista
             using (MySqlConnection con = conexionBD.ObtenerConexion())
             {
                 con.Open();
-                string queryUsuarios = "SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo FROM usuario u INNER JOIN rol r ON u.id_rol = r.id_rol WHERE u.estado_laboral = 'Vigente'";
+                string queryUsuarios = "SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo FROM usuario u INNER JOIN rol r ON u.id_rol = r.id_rol";
                 DataTable dtUsuarios = new DataTable();
                 using (MySqlDataAdapter adapterU = new MySqlDataAdapter(queryUsuarios, con)) { adapterU.Fill(dtUsuarios); }
 
@@ -1143,7 +1148,7 @@ namespace AplicacionMVP.Vista
             {
                 con.Open();
 
-                string queryUsuarios = "SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo FROM usuario u INNER JOIN rol r ON u.id_rol = r.id_rol WHERE u.estado_laboral = 'Vigente'";
+                string queryUsuarios = "SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo FROM usuario u INNER JOIN rol r ON u.id_rol = r.id_rol";
                 DataTable dtUsuarios = new DataTable();
                 using (MySqlDataAdapter adapterU = new MySqlDataAdapter(queryUsuarios, con)) { adapterU.Fill(dtUsuarios); }
 
