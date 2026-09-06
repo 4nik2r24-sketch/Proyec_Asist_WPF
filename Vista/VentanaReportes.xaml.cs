@@ -430,13 +430,12 @@ namespace AplicacionMVP.Vista
             {
                 con.Open();
                 string queryDatos = @"
-                    SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo, 
-                           a.hora_entrada, a.hora_salida, a.estado_asistencia
-                    FROM usuario u 
-                    INNER JOIN rol r ON u.id_rol = r.id_rol 
-                    LEFT JOIN asistencia a ON u.id_usuario = a.id_usuario AND a.fecha = @fecha
-                    WHERE u.estado = 'Vigente'
-                    ORDER BY a.hora_entrada DESC, u.id_usuario ASC";
+    SELECT u.id_usuario, u.rut, u.nombre, u.apellido_paterno, r.nombre_rol AS cargo, 
+           a.hora_entrada, a.hora_salida, a.estado_asistencia
+    FROM usuario u 
+    INNER JOIN rol r ON u.id_rol = r.id_rol 
+    LEFT JOIN asistencia a ON u.id_usuario = a.id_usuario AND a.fecha = @fecha
+    ORDER BY a.hora_entrada DESC, u.id_usuario ASC";
 
                 DataTable dtDatos = new DataTable();
                 using (MySqlCommand cmd = new MySqlCommand(queryDatos, con))
