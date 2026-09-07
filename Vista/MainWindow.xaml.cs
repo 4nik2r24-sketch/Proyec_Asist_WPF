@@ -43,9 +43,9 @@ namespace AplicacionMVP.Vista
                             if (reader.Read())
                             {
                                 string estado = reader.GetString("estado");
-                                if (estado == "Desvinculado")
+                                if (estado == "Eliminado")
                                 {
-                                    lblError.Text = "Su usuario se encuentra desvinculado.";
+                                    lblError.Text = "Su usuario se encuentra eliminado.";
                                     lblError.Visibility = Visibility.Visible;
                                     return;
                                 }
